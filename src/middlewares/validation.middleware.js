@@ -17,6 +17,16 @@ export const generalRule = {
   RefreshToken: Joi.string(),
   content: Joi.string().min(3),
   files: Joi.array().items(Joi.object({})),
+  dateOfBirth: Joi.date().iso().max('now').custom((value, helpers) => {
+    const age = Math.floor((new Date() - new Date(value)) / (365.25 * 24 * 60 * 60 * 1000));
+    if (age < 18) {
+      return helpers.error('date.min.age', { min: 18 });
+    }
+    if (age > 60) {
+      return helpers.error('date.max.age', { max: 60 });
+    }
+    return value;
+  }),
 };
 
 export const validation = (schema) => {

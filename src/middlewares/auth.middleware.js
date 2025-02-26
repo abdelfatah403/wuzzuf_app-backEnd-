@@ -23,7 +23,7 @@ export const decodeToken = async ({
 
   const decoded = verifyToken(
     token,
-    tokenType === "access" ? ACCESS_SIGNATURE : REFRESH_SIGNATURE
+    tokenType === tokenTypes.access ? ACCESS_SIGNATURE : REFRESH_SIGNATURE
   );
 
   if (!decoded) {

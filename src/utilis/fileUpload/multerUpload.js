@@ -3,7 +3,7 @@ import multer, { diskStorage } from "multer";
 export const multerUpload = (types = []) => {
     const storage = diskStorage({
       destination: function (req, file, cb) {
-        cb(null, "public/uploads");
+        cb(null, "uploads");
       },
     })
   const fileFilter = (req, file, cb) => {

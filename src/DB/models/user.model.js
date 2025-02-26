@@ -1,40 +1,35 @@
 import mongoose, { Types, Schema } from "mongoose";
 import { enumGender, enumProvidors, enumRole } from "../enums.js";
 import { hash } from "../../utilis/hash/hashing.js";
-import { encrypt } from "../../utilis/encrypt/encryption.js";
+import { decrypt, encrypt } from "../../utilis/encrypt/encryption.js";
 
 const UserSchema = new Schema(
   {
     firstName: {
       type: String,
-      required: true,
       trim: true,
     },
     lastName: {
       type: String,
-      required: true,
       trim: true,
     },
+
     email: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
       lowercase: true,
     },
     phone: {
       type: String,
-      required: true,
     },
     password: {
       type: String,
-      required: true,
       minlength: 6,
     },
     gender: {
       type: String,
       enum: Object.values(enumGender),
-      required: true,
     },
     role: {
       type: String,
@@ -58,6 +53,10 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     deletedAt: {
       type: Date,
       default: null,
@@ -70,38 +69,17 @@ const UserSchema = new Schema(
     DOB: {
       type: Date,
       default: null,
-      validate: {
-        validator: function (value) {
-          const age = new Date().getFullYear() - value.getFullYear();
-          return age >= 18 && age <= 65;
-        },
-        message: "Age must be between 18 and 65",
-
-        validator: function (value) {
-          return /^\d{4}-\d{1,2}-\d{1,2}$/.test(
-            value.toISOString().split("T")[0]
-          );
-        },
-        message: "Invalid date format. Please use YYYY-MM-DD.",
-      },
     },
-    changeCredentialTime: date,
+    changeCredentialTime: Date,
     profilePic: {
       secure_url: String,
       public_id: String,
     },
-    coverPic: [String],
-    otp: [
-      {
-        confirmEmail: {
-          type: String,
-        },
-        expiresIn: Date,
-        forgetPassword: {
-          type: String,
-        },
-      },
-    ],
+    avatar: String,
+    coverPic: [Object],
+    otp: String,
+
+    otpExpiry: Date,
   },
   {
     timestamps: true,
@@ -120,11 +98,24 @@ UserSchema.virtual("fullName").get(function () {
 
 UserSchema.pre("save", async function (next) {
   if (this.isModified("password") || this.isModified("phone")) {
-    this.password = await hash({plainText: this.password, salt: process.env.SALT });
+    this.password = await hash({
+      plainText: this.password,
+      salt: parseInt(process.env.SALT),
+    });
     this.phone = await encrypt(this.phone, process.env.SECRET_KEY_Phone);
   }
   next();
 });
+
+UserSchema.pre("find", function (next) {
+  if (this.isModified("phone")) {
+    this.phone = decrypt(this.phone, process.env.SECRET_KEY_Phone);
+  }
+  next();
+});
+
+UserSchema.index({ otpExpiry: 1 }, { expireAfterSeconds: 6 * 60 * 60 });
+UserSchema.index({ otp: 1 }, { expireAfterSeconds: 6 * 60 * 60 });
 const User = mongoose.model("User", UserSchema);
 
 export default User;
