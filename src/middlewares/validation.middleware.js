@@ -27,6 +27,17 @@ export const generalRule = {
     }
     return value;
   }),
+  jobTitle: Joi.string(),
+  jobDescription: Joi.string(),
+  company: Joi.string(),
+  jobLocation: Joi.string(),
+  workingTime: Joi.string(),
+  salary: Joi.number(),
+  technicalSkills: Joi.array().items(Joi.string()),
+  seniorityLevel: Joi.string(),
+  addedBy: Joi.string(),
+  updatedBy: Joi.string(),
+  companyId: Joi.string(),
 };
 
 export const validation = (schema) => {

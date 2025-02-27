@@ -10,22 +10,18 @@ const CompanySchema = new Schema(
     },
     description: {
       type: String,
-      required: true,
       trim: true,
     },
     industry: {
       type: String,
-      required: true,
       trim: true,
     },
     address: {
       type: String,
-      required: true,
       trim: true,
     },
     numberOfEmployees: {
       type: String,
-      required: true,
       trim: true,
     },
     companyEmail: {
@@ -38,17 +34,21 @@ const CompanySchema = new Schema(
       type: Types.ObjectId,
       ref: "User",
     },
-    Logo: {
+    profilePic: {
       secure_url: String,
       public_id: String,
     },
-    coverPic: [String],
+    coverPic: [Object],
     HRs: [
       {
         type: Types.ObjectId,
         ref: "User",
       },
     ],
+    isDeleted:{
+      type:Boolean,
+      default:false
+    },
     bannedAt: Date,
     deletedAt: Date,
     legalAttachment: {
@@ -71,6 +71,11 @@ const CompanySchema = new Schema(
   }
 );
 
+CompanySchema.virtual("jobs", {
+  ref: "Job",
+  localField: "_id",
+  foreignField: "companyId",
+});
 
 const Company = mongoose.model("Company", CompanySchema);
 

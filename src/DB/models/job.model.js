@@ -5,27 +5,25 @@ const jobSchema = new Schema(
   {
     jobTitle: {
       type: String,
-      required: true,
       trim: true,
     },
     jobLocation: {
       type: String,
-      trim: true,
-      required: true,
-      enum: Object.values(jobLocation),
-      default: jobLocation.remote,
     },
     workingTime: {
       type: String,
-      enum: Object.values(workingTime),
-      required: true,
     },
     seniorityLevel: {
       type: String,
-      required: true,
+      
     },
     jobDescription : {
       type: String,
+     
+    },
+    companyId: {
+      type: Types.ObjectId,
+      ref: "Company",
       required: true,
     },
     technicalSkills:[String],

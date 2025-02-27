@@ -52,7 +52,7 @@ export const uploadPofile = async (req, res, next) => {
   if (!user) {
     return next(new Error("User not found", { cause: 404 }));
   }
-  const { secure_url, public_id } = cloudinary.uploader.upload(req.file.path);
+  const { secure_url, public_id } = await cloudinary.uploader.upload(req.file.path);
 
   user.profilePic = { secure_url, public_id };
   await user.save();

@@ -114,8 +114,6 @@ UserSchema.pre("find", function (next) {
   next();
 });
 
-UserSchema.index({ otpExpiry: 1 }, { expireAfterSeconds: 6 * 60 * 60 });
-UserSchema.index({ otp: 1 }, { expireAfterSeconds: 6 * 60 * 60 });
 const User = mongoose.model("User", UserSchema);
 
 export default User;

@@ -44,7 +44,7 @@ UserRouter.delete(
   asyncHandler(userService.DeleteuploadCover)
 );
 UserRouter.patch(
-  "/users/status",
+  "/softDeleteAndRestore",
   authentication(),
   asyncHandler(userService.softDeleteAndRestore)
 );

@@ -15,9 +15,7 @@ export const signUp = async (req, res, next) => {
     return next(new Error("user already exists", { cause: 401 }));
   }
   const otpExpiry = Date.now() + 10 * 60 * 1000;
-  // const { secure_url, public_id } = await cloudinary.uploader.upload(
-  //   req.file.path
-  // );
+ 
   const create = await User.create({
     firstName,
     lastName,
