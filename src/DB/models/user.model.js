@@ -47,7 +47,7 @@ const UserSchema = new Schema(
     },
     bannedAt: {
       type: Date,
-      default: null,
+      
     },
     isDeleted: {
       type: Boolean,
@@ -59,16 +59,14 @@ const UserSchema = new Schema(
     },
     deletedAt: {
       type: Date,
-      default: null,
+     
     },
     updatedBy: {
       type: Types.ObjectId,
       ref: "User",
-      default: null,
     },
     DOB: {
       type: Date,
-      default: null,
     },
     changeCredentialTime: Date,
     profilePic: {

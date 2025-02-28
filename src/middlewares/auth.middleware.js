@@ -16,7 +16,7 @@ export const decodeToken = async ({
     REFRESH_SIGNATURE = process.env.USER_REFRESH_TOKEN;
   } else if (bearer === "admin") {
     ACCESS_SIGNATURE = process.env.ADMIN_ACCESS_TOKEN;
-    REFRESH_SIGNATURE = process.env.ADMIN_REFRESH_TOKEN;
+    REFRESH_SIGNATURE = process.env.ADMIN_TOKEN;
   } else {
     return next(new Error("Invalid token type", { cause: 401 }));
   }
@@ -48,49 +48,48 @@ export const authentication = () => {
 };
 
 export const AllowTo = (roles = []) => {
-    return asyncHandler(async (req, res, next) => {
-      if (!roles.includes(req.user.role)) {
-        return next(new Error("forbidden", { cause: 403 }));
-      }
-      return next();
-    });
-  };
-  
-
-  export const authGRaphql = async ({
-    authorization = "",
-    tokenType = tokenTypes.access,
-    roles = [],
-  }) => {
-    const [bearar, token] = authorization.split(" ") || [];
-    let ACCESS_TOKEN = undefined;
-    let REFRESH_TOKEN = undefined;
-  
-    if (bearar === "user") {
-      ACCESS_TOKEN = process.env.USER_ACCESS_TOKEN;
-      REFRESH_TOKEN = process.env.USER_REFRESH_TOKEN;
-    } else if (bearar === "admin") {
-      ACCESS_TOKEN = process.env.ADMIN_ACCESS_TOKEN;
-      REFRESH_TOKEN = process.env.ADMIN_REFRESH_TOKEN;
-    } else {
-      throw new Error("Invalid token type");
-    }
-    const decoded = verfiyToken(
-      token,
-      tokenType === tokenTypes.access ? ACCESS_TOKEN : REFRESH_TOKEN
-    );
-  
-    if (!decoded) {
-      throw new Error("Invalid token");
-    }
-  
-    const user = await User.findById(decoded.id);
-    if (!user) {
-      throw new Error("User not found");
-    }
+  return asyncHandler(async (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(new Error("forbidden", { cause: 403 }));
     }
-  
-    return user;
-  };
+    return next();
+  });
+};
+
+export const authGRaphql = async ({
+  authorization = "",
+  tokenType = tokenTypes.access,
+  roles = [],
+}) => {
+  const [bearar, token] = authorization.split(" ") || [];
+  let ACCESS_TOKEN = undefined;
+  let REFRESH_TOKEN = undefined;
+
+  if (bearar === "user") {
+    ACCESS_TOKEN = process.env.USER_ACCESS_TOKEN;
+    REFRESH_TOKEN = process.env.USER_REFRESH_TOKEN;
+  } else if (bearar === "admin") {
+    ACCESS_TOKEN = process.env.ADMIN_ACCESS_TOKEN;
+    REFRESH_TOKEN = process.env.ADMIN_REFRESH_TOKEN;
+  } else {
+    throw new Error("Invalid token type");
+  }
+  const decoded = verfiyToken(
+    token,
+    tokenType === tokenTypes.access ? ACCESS_TOKEN : REFRESH_TOKEN
+  );
+
+  if (!decoded) {
+    throw new Error("Invalid token");
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  if (!roles.includes(req.user.role)) {
+    return next(new Error("forbidden", { cause: 403 }));
+  }
+
+  return user;
+};

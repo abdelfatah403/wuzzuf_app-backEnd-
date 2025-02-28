@@ -49,6 +49,12 @@ const jobSchema = new Schema(
   }
 );
 
+jobSchema.virtual("application", {
+  ref: "Application",
+  localField: "_id",
+  foreignField: "jobId",
+});
+
 
 
 const Job = mongoose.model("Job", jobSchema);
